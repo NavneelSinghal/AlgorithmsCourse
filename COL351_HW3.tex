@@ -116,8 +116,8 @@ We can prove this claim by induction as follows:
 \paragraph{Inductive Case} Suppose the claim holds for some $n-1 \geq 1$. We will show that this implies that claim is also true for $n$.
 \begin{align*}
     T(n) &= 3T(n-1) + 1\\
-         &= 3 \times \frac{3^n - 1}{2} + 1\\
-         &= \frac{3^{n+1} - 1}{2}
+         &= 3 \times \frac{3^{n - 1} - 1}{2} + 1\\
+         &= \frac{3^{n} - 1}{2}
 \end{align*}
 which established the induction and proves the claim.
 \end{proof}
