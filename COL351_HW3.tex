@@ -1254,8 +1254,8 @@ The following are 10 paths (the remaining 10 are obtained by reflecting the path
 
     Note that the following algorithm also works for graphs with vertices with degree more than $3$, however the exhibited runtime bound matches with the requested runtime bound only for graphs with bounded degree $3$.
 
-    We exhibit an algorithm that works in $O(n^2 2^{n'/4})$ time, where $n'$ is defined as $$\sum_{i \in \mathbb{N}} i \times\text{number of vertices with degree }(i + 2)$$
-    Clearly for a graph with max degree $3$, we have $n' \le n$, so the algorithm has runtime in $O(n^2 2^{n/4})$. 
+    We exhibit an algorithm that works in $O((n + m)^2 2^{n'/4})$ time, where $m$ is the number of edges in the graph, and $n'$ is defined as $$\sum_{i \in \mathbb{N}} i \times\text{number of vertices with degree }(i + 2)$$
+    Clearly for a graph with max degree $3$, we have $n' \le n$, and $m = O(n)$, so the algorithm has runtime in $O(n^2 2^{n/4})$. 
 
     \textbf{Note:} The following algorithm can be optimized in a real-world implementation using backtracking and updating the graph instead of creating a new graph each time, and maintaining a heap
     to find the vertex with the least degree. However, the complexity still remains the same and there is no real complexity gain.
@@ -1391,8 +1391,8 @@ Now, we make cases on the vertex $v$ with the least degree in the graph.
 
 By the above case analysis, we can see that the algorithm returns a maximum independent set in all cases, and thus the induction is complete.
 
-\paragraph{Time complexity analysis} Let $n$ be the number of nodes in the graph, and let $n'$ be as defined. Let the number of constant-time operations
-needed in this algorithm be denoted by $f(n, n')$. Then we claim that $f(n, n') \le c (n + 1)^2 2^{n'/4}$ for any non-empty graph where $c$ is a suitably chosen large enough constant, which will be specified later on.
+\paragraph{Time complexity analysis} Let $n, m$ be the number of nodes, edges in the graph, and let $n'$ be as defined. Let the number of constant-time operations
+needed in this algorithm be denoted by $f(n, m, n')$. Then we claim that $f(n, m, n') \le c (n + m + 1)^2 2^{n'/4}$ for any non-empty graph where $c$ is a suitably chosen large enough constant, which will be specified later on.
 
 We first begin with two claims:
 
@@ -1437,48 +1437,47 @@ Now we move to the main proof of the time complexity.
 inductive step.}
 
 \begin{proof}
-    The proof goes by strong induction on the lexicographical ordering of pairs $(n, n')$ of non-negative integers where $0 \le n' \le n$.\nl
+    The proof goes by strong induction on the lexicographical ordering of tuples $(n, m, n')$ of non-negative integers.\nl
     For the base case, if the number of operations to check if the graph is empty is $c_1$, then if we have $c \ge c_1$, the base case holds.\nl
-    The number of operations to find out the vertex with the least degree is at most linear in $n$, by traversing constant-sized adjacency lists for each vertex. Suppose it is upper bounded by
-    $c_2n$ for all $n$.\nl
+    The number of operations to find out the vertex with the least degree is at most linear in $n + m$. Suppose it is upper bounded by
+    $c_2(n + m)$ for all $n, m$.\nl
     If the degree is $0$, then removing the vertex from the graph takes at most linear operations (wherever operations are mentioned, we mean constant-time operations unless specified otherwise).
-    Suppose the time for this and taking the union and returning the set is upper bounded by $c_3n$ for all $n$. So we have 
+    Suppose the time for this and taking the union and returning the set is upper bounded by $c_3(n + m)$ for all $n, m$. So we have 
     \begin{align*}
-        f(n, n') &\le f(n - 1, n') + c_3 n + c_2 n\\
-        &\le cn^2 2^{n'/4} + c_3 n + c_2 n\\
-        &\le c(n + 1)^2 2^{n' / 4}
+        f(n, m, n') &\le f(n - 1, m, n') + c_3 n + c_2 n\\
+        &\le c(n + m)^2 2^{n'/4} + (c_3 + c_2)(n + m)\\
+        &\le c(n + m + 1)^2 2^{n' / 4}
     \end{align*}
         where the last inequality is true if we have $c > c_3 + c_2$.\nl
-    If the degree is $1$, then removing both vertices and returning the set takes linear time, say upper bounded by $c_4n$ for all $n$. Then we have \begin{align*}
-        f(n, n') &\le \max_{0 \le i \le n'}f(n - 2, n' - i) + c_4 n + c_2 n\\
-        &\le c(n - 1)^2 2^{n'/4} + c_4n + c_2 n\\
-        &\le c(n + 1)^2 2^{n'/4}
+    If the degree is $1$, then removing both vertices and returning the set takes linear time, say upper bounded by $c_4(n + m)$ for all $n, m$. Then we have \begin{align*}
+        f(n, m, n') &\le \max_{0 \le i \le n'}f(n - 2, m - \deg(u), n' - i) + (c_4 + c_2)(n + m)\\
+        &\le c(n + m - 1)^2 2^{n'/4} + (c_4 + c_2)(n + m)\\
+        &\le c(n + m + 1)^2 2^{n'/4}
 \end{align*}
     where the last inequality is true if we have $c > c_4 + c_2$.\nl
-    If the degree is $2$, the checking of the two subcases takes constant number of operations, upper bounded by a constant, say $c_5$ for all $n$.
+    If the degree is $2$, the checking of the two subcases takes at most linear number of operations, upper bounded by, say $c_5(n + m)$ for all $n, m$.
     
-    In the first subcase, the removal of the vertices to get a new graph, taking the union and returning takes at most $c_6 n$ operations for all $n$, for some constant $c_6$. Then we have 
+    In the first subcase, the removal of the vertices to get a new graph, taking the union and returning takes at most $c_6(n + m)$ operations for all $n, m$, for some constant $c_6$. Then we have 
     \begin{align*}
-        f(n, n') &\le \max_{0 \le i \le n'}f(n - 3, n' - i) + c_6 n + c_5 + c_2 n\\
-                &\le c(n - 2)^2 2^{n'/4} + c_6n + c_5 + c_2 n\\
-                &\le c(n - 2)^2 2^{n'/4} + c_6n + c_5n + c_2 n\\
-                &\le c(n + 1)^2 2^{n'/4} 
+        f(n, m, n') &\le \max_{0 \le i \le n'}f(n - 3, m - 3 - \epsilon, n' - i) + (c_6 n + c_5 + c_2)(n + m)\\
+                &\le c(n + m - 5)^2 2^{n'/4} + (c_6 n + c_5 + c_2)(n + m)\\
+                &\le c(n + m - 5)^2 2^{n'/4} + (c_6 n + c_5 + c_2)(n + m)\\
+                &\le c(n + m + 1)^2 2^{n'/4}
     \end{align*}
     where the last inequality is true if $c > c_5 + c_6 + c_2$.
     
     In the second subcase, the creation of the new graph takes a linear number of operations, and so does taking the union, searching in the returned set, modifying the returned set and returning it.
-    Suppose it is upper bounded by $c_7n$ for all $n$.
+    Suppose it is upper bounded by $c_7(n + m)$ for all $n, m$.
     \begin{align*}
-        f(n, n') &\le \max_{0 \le i \le n'}f(n - 2, n' - i) + c_7 n + c_5 + c_2 n\\
-                &\le c(n - 1)^2 2^{n'/4} + c_7n + c_5 + c_2 n\\
-                &\le c(n - 1)^2 2^{n'/5} + c_7n + c_5n + c_2 n\\
-                &\le c(n + 1)^2 2^{n'/4}
+        f(n, m, n') &\le \max_{0 \le i \le n'}f(n - 2, m - 2 - \epsilon, n' - i) + (c_7 + c_5 + c_2)(n + m)\\
+                &\le c(n + m - 3)^2 2^{n'/4} + (c_7 + c_5 + c_2)(n + m)\\
+                &\le c(n + m + 1)^2 2^{n'/4}
     \end{align*}
     where the last inequality is true if $c > c_7 + c_5 + c_2$.
 
     If none of the above cases is true, then the minimum degree $d$ in the graph must be at least $3$, and as a consequence, all vertices in the graph must have degree at least $d$.
     Comparing sizes of sets and returning the larger one of them takes linear number of operations, and so does creating two graphs with one and two vertices removed. 
-    Suppose all of this is upper bounded by $c_8 n$ for all $n$.
+    Suppose all of this is upper bounded by $c_8 (n + m)$ for all $n, m$.
 
     We compute the difference in $n'$ in this case. When we remove a vertex with degree $d$, $n'$ decreases by at least $2d - 2$, since the contribution of this vertex is $d - 2$, and the reduction
     in the degree of each other vertex is exactly $1$. 
@@ -1486,23 +1485,23 @@ inductive step.}
 
     We then have:
     \begin{align*}
-        f(n, n') &\le f(n - 1, n' - 2d + 2) + f(n - d - 1, n' - d') + c_8 n + c_2 n\\
+        f(n, m, n') &\le f(n - 1, m - d, n' - 2d + 2) + f(n - d - 1, m - d - \epsilon, n' - d') + (c_8 + c_2)(n + m)\\
                 &\le cn^2 2^{(n' - 2d + 2) / 4} + c(n - d)^2
     2^{(n' - d') / 4} + c_8 n + c_2 n \\
-                &\le cn^2 2^{(n' - 2d + 2) / 4} + c(n - d)^2 2^{(n' - (d+1)(d-2)) / 4} + c_8 n + c_2 n \\
-                &\le cn^2 2^{(n' - 4) / 4} + c(n - 3)^2 2^{(n' - 4) / 4} + c_8 n + c_2 n \\
-                &= \frac{1}{2} \cdot cn^2 2^{n'/4} + \frac{1}{2} \cdot c(n - 3)^2 2^{n'/4} + c_8 n + c_2n\\
-                &\le \frac{1}{2} \cdot cn^2 2^{n'/4} + \frac{1}{2} \cdot cn^2 2^{n'/4 - 1} + c_8 n + c_2n\\
-                &= cn^2 2^{n'/4} + c_8 n + c_2 n\\
-                &\le c(n + 1)^2 2^{n'/4}
+                &\le c(n + m - d)^2 2^{(n' - 2d + 2) / 4} + c(n + m - 2d)^2 2^{(n' - (d+1)(d-2)) / 4} + (c_8 + c_2)(n + m) \\
+                &\le c(n + m - 3)^2 2^{(n' - 4) / 4} + c(n + m - 6)^2 2^{(n' - 4) / 4} + (c_8 + c_2)(n + m)\\
+                &= \frac{1}{2} \cdot c(n + m - 3)^2 2^{n' / 4} + \frac{1}{2} \cdot c(n + m - 6)^2 2^{n' / 4} + (c_8 + c_2)(n + m)\\
+                &\le \frac{1}{2} \cdot c(n + m)^2 2^{n'/4} + \frac{1}{2} \cdot c(n + m)^2 2^{n'/4} + (c_8 + c_2)(n + m)\\
+                &= c(n + m)^2 2^{n'/4} + (c_8 + c_2)(n + m)\\
+                &\le c(n + m + 1)^2 2^{n'/4}
     \end{align*}
     where the last inequality is true if $c > c_8 + c_2$. We have made use of the facts that $d \ge 3$, $d' \ge 4d - 8$, and that $(d + 1)(d - 2)$ is increasing on $[2, \infty)$.
 
     Note that if we choose $c = 1 + c_2 + \max(c_1 - c_2, c_3, c_4, c_5 + c_6, c_5 + c_7, c_8)$, all of these claims will be valid, and thus our proof by induction is complete.
 \end{proof}
 
-Since our claim is completed, we have that for $n > 0$, our algorithm takes $O((n + 1)^2 2^{n'/4})$ time. Since for $n > 0$, we have $n + 1 \le 2n$, so the algorithm is in $O(n^2 2^{n'/4})$, and since
-$n' \le n$ for any graph with bounded degree 3, we have that the runtime of the algorithm is in $O(n^2 2^{n / 4})$, as required.
+Since our claim is completed, we have that for $n > 0$, our algorithm takes $O((n + m + 1)^2 2^{n'/4})$ time, since it takes the same order of constant time operations.
+Note that we have $n' \le n$ as well as $m = O(n)$ for any graph with bounded degree 3, so the runtime of the algorithm is in $O(n^2 2^{n / 4})$, as required.
 
 \end{solution}
 
