@@ -985,7 +985,7 @@ We shall need the following claim:
 \end{claim}
 \begin{proof}
     Suppose there is an optimal real solution with $n_2 \ge D$.
-    Suppose the value of $n_1$ is some $a - 1$ (for t). 
+    Suppose the value of $n_1$ is some $a - 1$ (for the sake of convenience). 
     
     Let $G(n_2, n_3) = 3^{n_3}(a2^{n_2} - 1/2)$.
     
@@ -1011,7 +1011,7 @@ Hence, plugging in these values, we see that the upper bound on $f(n)$ is $O(3^{
     T(n) \in O(3^{2n/3}) \approx O(2.0800^n)
 \]
 \end{proof}
-Finally we produce an example of graph with $n$ vertices such that number of paths in this graph from a particular vertex to another particular vertex is $O(1.8205^n)$. The graph is essentially a chain of pentagons arranged as shown, with an isolated rightmost vertex, so that the answer to the problem is no. In this case, note that all paths from the starting node to the last node will be traversed. Notice that each vertex has degree of at most 4 (exactly 4 for most vertices, but less for the vertices on the corner pentagons and the isolated vertex). To obtain an estimate on number of paths in this graph one can calculate that number of paths from the vertex marked $A$ to vertex marked $F$ is 20 going through the connecting pentagon. So there are 20 ways to reach $F$ from $A$. So if there are $n$ vertices, we have $(n - 1)/5$ pentagons and number of ways to reach the last end of last pentagon from the tip of first pentagon will be $O(20^{n/5}) = O(1.8205^n)$.
+Finally we produce an example of graph with $n$ vertices such that number of paths in this graph from a particular vertex to another particular vertex is $\Theta(1.8205^n)$. The graph is essentially a chain of pentagons arranged as shown, with an isolated rightmost vertex, so that the answer to the problem is no. In this case, note that all paths from the starting node to the last node will be traversed. Notice that each vertex has degree of at most 4 (exactly 4 for most vertices, but less for the vertices on the corner pentagons and the isolated vertex). To obtain an estimate on number of paths in this graph one can calculate that number of paths from the vertex marked $A$ to vertex marked $F$ is 20 going through the connecting pentagon. So there are 20 ways to reach $F$ from $A$. So if there are $n$ vertices, we have $(n - 1)/5$ pentagons and number of ways to reach the last end of last pentagon from the tip of first pentagon will be $\Theta(20^{n/5}) = \Omega(1.8205^n)$.
 %\begin{figure}[H]
 %    \centering
 %    \includegraphics[width=\textwidth]{graph}
