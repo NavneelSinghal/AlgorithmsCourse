@@ -1,0 +1,245 @@
+% CUSTOM TEMPLATE FOR SOLUTIONS STARTS
+\documentclass[answers]{exam}
+ 
+ \usepackage{graphicx}
+ \usepackage{float}
+ \usepackage{amsmath}
+ \usepackage{amsfonts}
+ \usepackage{framed}
+ \usepackage{algorithmicx}
+ \usepackage[noend]{algpseudocode}
+ \newcommand{\ans}[1]{\begin{framed}{\textbf{Answer:} #1}\end{framed}}
+ \newcommand{\sol}{\uplevel{\textsc{Solution:}}}
+ \newenvironment{answer}{%
+     \renewcommand{\solutiontitle}{\noindent\textbf{Answer:}\enspace}
+     \begin{solution}
+     }{%
+     \end{solution}
+     \renewcommand{\solutiontitle}{\noindent\textbf{Solution:}\enspace}
+ }
+% CUSTOM TEMPLATE FOR SOLUTIONS ENDS
+
+% First we setup the header and footer
+\pagestyle{headandfoot}
+\runningheadrule
+\runningfootrule
+\header{COL351: Analysis and Design of Algorithms (CSE, IITD, Semester-I-2020-21)}{}{Homework-00}
+\footer{}{\thepage  \, of \numpages}{}
+ 
+% We want the points for each question displayed on the left
+%\pointname{points}
+%\pointsinmargin
+ 
+% Automatically total the points - make sure to compile TWICE
+\addpoints
+ 
+\begin{document}
+
+
+\begin{center} 
+\fbox{\parbox{5.5in}{
+\vspace{-0.1in}
+\begin{itemize}
+\item \small{Homework solutions should be neatly written or typed and turned in through {\bf Gradescope} by 11:59pm on the due date. No late homeworks will be accepted for any reason.  You will be able to look at your scanned work before submitting it. Please ensure that your submission is legible (neatly written and not too faint) or your homework may not be graded.}
+
+\item \small{Students should consult their textbook, class notes, lecture slides, instructors, TAs, and tutors when 
+they need help with homework. Students should not look for answers to homework problems in other texts or sources, including the internet. Only post about graded homework questions on Piazza if you suspect a typo in the assignment, or if you don't understand what the question is asking you to do. Other questions are best addressed in office hours.}
+
+\item \small{Your assignments in this class will be evaluated not only on the correctness of your answers, but on your ability to present your ideas clearly and logically. You should always explain how you arrived at your conclusions, using mathematically sound reasoning. Whether you use formal proof techniques or write a more informal argument for why something is true, your answers should always be well-supported. Your goal should be to convince the reader that your results and methods are sound.}
+
+\item \small{For questions that require pseudocode, you can follow the same format as the textbook, or you can write pseudocode in your own style, as long as you specify what your notation means. For example, are you using ``='' to mean assignment or to check equality? You are welcome to use any algorithm from class as a subroutine in your pseudocode. For example, if you want to sort list $A$ using {\tt InsertionSort}, you can call {\tt InsertionSort($A$)} instead of writing out the pseudocode for {\tt InsertionSort}.}
+\end{itemize}
+\vspace{-0.1in}
+}}
+\end{center}
+
+\vspace{0.1in}
+
+
+\vspace{0.1in}
+% Some general text together with number of questions and total points possible
+There are \numquestions\, questions for a total of \numpoints\, points.
+\vspace{0.1in}
+\hrule
+ \vspace{0.2in}
+\begin{questions}
+ 
+% First question, worth 3 points
+\question[10] Let $f(n)$ and $g(n)$ be functions from the nonnegative integers to the positive real numbers. Prove the following transitive property from the definition of big-$O$: \\
+\begin{center}
+If $f (n) \in O(g (n))$ and $g (n) \in O(h(n))$ then
+$f (n) \in O(h(n)).$
+\end{center}
+
+\begin{solution}
+
+    From the definition of big-$O$, there exists a positive integer $n_1 \in \mathbb{N}$ and a constant $c_1 \in \mathbb{R}_+$ satisfying $$f(n) \le c_1 g(n) \quad \forall n \ge n_1, n \in \mathbb{N}$$
+    From the definition of big-$O$, there exists a positive integer $n_2 \in \mathbb{N}$ and a constant $c_2 \in \mathbb{R}_+$ satisfying $$g(n) \le c_2 h(n) \quad \forall n \ge n_2, n \in \mathbb{N}$$
+    Thus, for any $n \in \mathbb{N}, n \ge \max(n_1, n_2)$, we have $f(n) \le c_1 g(n) \le c_1 c_2 h(n)$, so for a constant $n_3 = \max(n_1, n_2) \in \mathbb{N}$ and $c_3 = c_1 c_2$, we have $$f(n) \le c_3 h(n) \quad \forall n \ge n_3, n \in \mathbb{N}$$ which, by the definition of big-$O$ means that $f(n) \in O(h(n))$.
+
+\end{solution}
+
+\question \underline{State True or False}:
+\begin{parts}
+\part[2] $2 \cdot (3^n) \in \Theta(3 \cdot (2^n))$
+    \begin{answer} False \end{answer}
+
+\part[2] $(n^6+2n+1)^2 \in \Omega((3n^3+4n^2)^4)$
+    \begin{answer} True \end{answer}
+
+\part[2] $\log n \in \Omega((\log{n})+n)$
+    \begin{answer} False \end{answer}
+
+\part[2] $n\log n+n \in O(n\log n)$
+    \begin{answer} True \end{answer}
+
+\part[2] $\log (n^{10}) \in \Theta(\log(n))$
+    \begin{answer} True \end{answer}
+
+\part[2] $\sum_{i=1}^n i^k \in \Theta(n^{k+1})$
+    \begin{answer} True \end{answer}
+
+\part[2] $(\log(n))^{\log(n)} \in O(n/\log(n))$
+    \begin{answer} False \end{answer}
+
+\part[2] $n! \in O(2^n)$
+    \begin{answer} False \end{answer}
+
+\end{parts}
+
+
+
+
+
+
+
+\vspace{0.3in}
+
+
+
+
+
+
+
+\question Given two lists $A$ of size $m$ and $B$ of length $n$, our goal is to construct a list of all elements in list $A$ that are also in list $B$. Consider the following two algorithms to solve this problem.
+
+\begin{framed}
+{\bf procedure} {\tt Search1}(List $A$ of size $m$, List $B$ of size $n$)\\
+1. \hspace*{0.1in} Initialize an empty list $L$.\\
+2. \hspace*{0.1in} {\tt SORT} list $B$\\
+3. \hspace*{0.1in} {\bf for} each item $a \in A$,\\
+4. \hspace*{0.3in} {\bf if} ({\tt BinarySearch($a, B$)} $\neq$ 0), {\bf then} \\
+5. \hspace*{0.5in} Append $a$ to list $L$.\\
+6. \hspace*{0.1in} {\bf return} $L$
+\end{framed} 
+
+\underline{\bf Note}: Assume that the {\tt SORT} algorithm used in {\tt Search1} algorithm above takes time proportional to $k \log k$ on an input list of size $k$.
+
+\begin{framed}
+{\bf procedure} {\tt Search2}(List $A$ of size $m$, List $B$ of size $n$)\\
+1. \hspace*{0.1in} Initialize an empty list $L$\\
+2. \hspace*{0.1in} {\bf for} each item $a \in A$,\\
+3. \hspace*{0.3in} {\bf if} ({\tt LinearSearch($a, B$)} $\neq 0$), {\bf then}\\
+4. \hspace*{0.5in} Append $a$ to list $L$.\\
+5. \hspace*{0.1in} {\bf return} $L$
+\end{framed}
+
+Answer the following questions:
+\begin{parts}
+\part[2] Calculate the runtime of {\tt Search1} in $\Theta$ notation, in terms of $m$ and $n$.
+
+\begin{solution}
+The first sorting has runtime in $\Theta(n \log n)$. Then for each iteration of the second loop, binary search has runtime in $\Theta(\log n)$, and since this is done $m$ times, the time taken by the for loop is in $\Theta(m \log n)$. So the runtime is finally $\Theta((m + n) \log n)$.
+\end{solution}
+
+\part[2]
+Calculate the runtime of {\tt Search2} in $\Theta$ notation, in terms of $m$ and $n$.
+\begin{solution}
+Each iteration of the for loop has runtime in $\Theta(n)$, and there are $m$ such iterations, so the procedure has runtime in $\Theta(nm)$.
+\end{solution}
+
+\part[2]
+When $m \in \Theta(1)$, which algorithm has faster runtime asymptotically?
+\begin{answer}
+\texttt{Search2}, since the runtime complexity for it becomes $\Theta(n)$, while that for \texttt{Search1} becomes $\Theta(n \log n)$.
+\end{answer}
+
+\part[2]
+When $m \in \Theta(n)$, which algorithm has faster runtime asymptotically?
+\begin{answer}
+\texttt{Search1}, since the runtime complexity for it becomes $\Theta(n \log n)$ while that for \texttt{Search2} becomes $\Theta(n^2)$.
+\end{answer}
+
+\part[2]
+Find a function $f(n)$ so that when $m \in \Theta(f(n))$, both algorithms have equal runtime asymptotically.
+\begin{answer}
+If $m \in \Theta(\log n)$, then both programs have runtime in $\Theta(n \log n)$.
+\end{answer}
+\end{parts}
+
+\vspace{0.3in}
+
+\question Show that if $c$ is a positive real number, then $g(n) = 1 +c + c^2 + ... + c^n$ is:
+\begin{parts}
+\part[3]
+$\Theta(1)$ if $c<1.$
+
+\begin{solution}
+If $c < 1$, we have $1 < g(n) = 1 + c + c^2 + \cdots + c^n < 1 + c + c^2 + \cdots = \frac{1}{1 - c}$, so $g(n)$ is bounded between two constants and is hence $\Theta(1)$.
+\end{solution}
+
+\part[3]
+$\Theta(n)$ if $c=1.$
+\begin{solution}
+If $c = 1$, all the terms on the right become $1$, so $g(n) = n + 1$. Since for $n > 1$, $n < g(n) < 2n$, we have $g(n) \in \Theta(n)$.
+\end{solution}
+
+\part[3]
+$\Theta(c^n)$ if $c>1.$
+
+\begin{solution}
+Using the formula for the sum of a geometric progression, we have $c^n < g(n) = \frac{c^{n + 1} - 1}{c - 1} < \frac{c^{n + 1}}{c - 1} = \left(\frac{c}{c - 1}\right) c^n$ for all $n > 1$, so $g(n) \in \Theta(c^n)$.
+\end{solution}
+
+\end{parts}
+
+\vspace{0.3in}
+
+\question The Fibonacci numbers $F_0, F_1, ...,$ are defined by 
+$$F_0 = 0, F_1 = 1, F_n = F_{n-1} + F_{n - 2}$$
+\begin{parts}
+\part[4]
+Use induction to prove that $F_n\ge 2^{0.5n}$ for $n \ge 6$.
+\begin{solution}\\
+\textbf{Base cases:}
+\begin{enumerate}
+    \item $n = 6:$ $F_6 = 8, 2^3 = 8$
+    \item $n = 7:$ $F_7 = 13, 2^{3.5} < 11.4$
+\end{enumerate}
+\textbf{Inductive hypothesis:} For all $k$ satisfying $6 \le k \le n$, we have $F_k \ge 2^{0.5k}$.\\
+\textbf{Inductive step:} We have 
+$$ F_{n + 1} = F_{n} + F_{n - 1} \ge 2^{0.5n} + 2^{0.5(n - 1)} = 2^{0.5(n + 1)} \cdot \left(\frac{1}{\sqrt{2}} + \frac{1}{2}\right) > 2^{0.5(n + 1)}$$
+Thus, our induction is complete.
+\end{solution}
+\part[4]
+Use induction to prove that $F_n\le 2^n$ for $n \ge 0$.
+\begin{solution}\\
+\textbf{Base cases:}
+\begin{enumerate}
+    \item $n = 0:$ $F_0 = 0, 2^0 = 1$
+    \item $n = 1:$ $F_1 = 1, 2^1 = 2$
+\end{enumerate}
+\textbf{Inductive hypothesis:} For all $k$ satisfying $0 \le k \le n$, we have $F_k \le 2^k$.\\
+\textbf{Inductive step:} We have 
+$$ F_{n + 1} = F_{n} + F_{n - 1} \le 2^{n} + 2^{n - 1} = 2^{n + 1} \cdot \left(\frac{1}{2} + \frac{1}{4}\right) < 2^{n + 1}$$
+Thus, our induction is complete.
+\end{solution}
+\part[2]
+What can we conclude about the growth of $F_n$?
+\end{parts}
+\begin{solution}
+This shows that the growth of $F_n$ is exponential in nature.
+\end{solution}
+\end{questions}
+\end{document}
+

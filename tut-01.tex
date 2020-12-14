@@ -1,0 +1,79 @@
+% CUSTOM TEMPLATE FOR SOLUTIONS STARTS
+\documentclass[answers]{exam}
+ \usepackage{graphicx}
+ \usepackage{float}
+ \usepackage{amsmath}
+ \usepackage{amssymb}
+ \usepackage{amsfonts}
+ \usepackage{framed}
+ \usepackage{algorithmicx}
+ \usepackage[noend]{algpseudocode}
+ \newcommand{\ans}[1]{\begin{framed}{\textbf{Answer:} #1}\end{framed}}
+ \newcommand{\sol}{\uplevel{\textsc{Solution:}}}
+ \newenvironment{answer}{%
+     \renewcommand{\solutiontitle}{\noindent\textbf{Answer:}\enspace}
+     \begin{solution}
+     }{%
+     \end{solution}
+     \renewcommand{\solutiontitle}{\noindent\textbf{Solution:}\enspace}
+ }
+ \newenvironment{claim}[1]{\par\noindent\underline{Claim:}\space#1}{}
+ \newenvironment{claimproof}[1]{\par\noindent\underline{Proof:}\space#1}{\hfill $\blacksquare$}
+ \newenvironment{proof}[1]{\par\noindent\underline{Proof:}\space#1}{\hfill $\blacksquare$}
+ 
+ % CUSTOM TEMPLATE FOR SOLUTIONS ENDS
+
+% First we setup the header and footer
+\pagestyle{headandfoot}
+\runningheadrule
+\runningfootrule
+\header{COL351: Analysis and Design of Algorithms (CSE, IITD, Semester-I-2020-21)}{}{Homework-00}
+\footer{}{\thepage  \, of \numpages}{}
+ 
+% We want the points for each question displayed on the left
+%\pointname{points}
+%\pointsinmargin
+ 
+% Automatically total the points - make sure to compile TWICE
+\addpoints
+ 
+\begin{document}
+
+
+\begin{questions}
+
+    \question
+    \begin{solution}
+    \begin{claim}
+        Let $P(k)$ denote the statement `for $2^k \le n < 2^{k + 1}$, we have $T(n) = 2^k$'.
+        Then, $\forall \,\, k \in \mathbb{N}\cup \{0\}$, $P(k)$ is true.
+    \end{claim}
+    \begin{proof}
+    Proof:
+        We perform induction on $k$.\\
+        Base case: $k = 0$. In this case, $1 \le n < 2$, so $n = 1$, and since $T(1) = 1 = 2^0 = 2^k$, we are done.\\
+        Inductive hypothesis: $P(i)$ is true for some $i \in \mathbb{N} \cup \{0\}$.\\
+        Inductive step: Suppose $2^{i + 1} \le n < 2^{i + 2}$.
+
+\begin{enumerate}
+\item $n$ is even. In this case, $T(n) = 2T(n / 2)$. Since $2^i \le n / 2 < 2^{i + 1}$, invoking the inductive hypothesis, we have $T(n / 2) = 2^{i}$, so $T(n) = 2^{i + 1}$.
+\item $n$ is odd. Here $n > 2^{i + 1}$, so $T(n) = T(n - 1) = 2T(\frac{n - 1}{2})$. Note that $2^i \le \frac{n - 1}{2} < 2^{i + 1}$, so $T(\frac{n - 1}{2}) = 2^i$, so $T(n) = 2^{i + 1}$.
+\end{enumerate}
+        
+        Since in either case, $T(n) = i + 1$, $P(i) \implies P(i + 1)$.\\
+        Thus by the principle of mathematical induction we are done.
+    \end{proof}
+\end{solution}
+
+\question
+
+    \begin{solution}
+        I claim that the answer is false.\\
+        I'll show that for any constant $c > 0$, there exists a positive integer $n_0$ such that $g(n) > c f(n)$ for all $n > n_0$.
+        Note that if $n > 2c$, we have $\frac{n}{2} \cdot 3^n > c \cdot 3^n$, and for $n > \log_{\frac{3}{2}} (20c)$, we have $\frac{n}{2} 3^n > 10c \cdot n \cdot 2^n$.\\
+        Thus for $n > \max(2c, \log_{\frac32}(20c))$, we have, by adding the above inequalities, $n \cdot 3^n > c \cdot \left(10n2^n + 3^n\right)$, as needed.
+    \end{solution}
+
+\end{questions}
+\end{document}
+
