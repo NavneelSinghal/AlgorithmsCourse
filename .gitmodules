@@ -1,6 +1,0 @@
-[submodule "hw4"]
-    path = hw4
-    url = git://git.overleaf.com/5fe076e0d767a8e479f11a68
-[submodule "hw5"]
-    path = hw5
-    url = git://git.overleaf.com/5fec232459085f41e0661509

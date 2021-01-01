@@ -1,0 +1,282 @@
+First we finish off the case where $k$ is at least the number of distinct resident locations. Then we can choose a testing center at all possible locations of a resident, and assign arbitrary locations to the remaining testing centers, to get $\sum_{i = 1}^n D(i) = 0$, which is the minimum possible value of the quantity on the LHS since $D$ is non-negative.
+
+Henceforth, we shall assume that $k$ is less than the number of distinct resident locations.
+
+We will need a few preliminaries before proceeding to the main solution.
+
+Firstly, we will show a lemma about sum of absolute values.
+
+\begin{lemma}
+    A number $x$ is said to be a median of a sorted sequence $a_1, a_2, \ldots, a_n$ if either
+    \begin{enumerate}
+        \item $n$ is odd, and $x = a_{\frac{n - 1}{2}}$, or
+        \item $n$ is even, and $x \in \left[a_{\frac{n}{2}}, a_{\frac{n}{2} + 1}\right]$.
+    \end{enumerate}
+    Then the function $f : \mathbb{R} \to \mathbb{R}$ defined by $f(x) = \sum_{i = 1}^n |x - a_i|$ 
+    \begin{enumerate}
+        \item Achieves its minimum, and
+        \item The set of values at which it achieves its minimum is precisely the set of medians of $a_1, a_2, \ldots, a_n$.
+    \end{enumerate}
+\end{lemma}
+\begin{proof}
+    This function is a piecewise linear continuous function. We have three cases for where $x$ can lie:
+    \begin{enumerate}
+        \item $x \le a_1$: In this case, we have $|x - a_i| = a_i - x$ for all $i$, and thus this function is decreasing in this interval.
+        \item $x \ge a_n$: In this case, we have $|x - a_i| = x - a_i$ for all $i$, and the function is increasing in this interval.
+        \item $a_j \le x \le a_{j + 1}$: In this case, we have $|x - a_i| = x - a_i$ for $i \le j$ and $|x - a_i| = a_i - x$ for $i > j$. Hence, the coefficient of $x$ in this interval is $j - (n -
+            j) = 2j - n$. Hence, depending on whether $2j - n$ is $<, =$ or $> 0$, the function is decreasing, constant and increasing in this interval.
+    \end{enumerate}
+
+    From here, we come to know that the function is decreasing on the interval $\left(-\infty, a_{\left\lceil\frac{n}{2}\right\rceil}\right]$ and increasing on the interval
+    $\left[a_{\left\lfloor\frac{n}{2}\right\rfloor + 1}, \infty\right)$, and constant on the remaining interval (if any). This completes the proof of the lemma.
+\end{proof}
+
+Consider any $A$ and an array $C$ of locations (in sorted order). Define $L(i)$ to be the index of the location in $C$ closest to $A[i]$. In case of ties, choose the least such index.\\
+
+\begin{claim}
+For any $i < j$, we have $L(i) \le L(j)$.
+\end{claim}
+\begin{proof}
+If $A[i] = A[j]$, we are done. Henceforth assume $A[i] < A[j]$. 
+
+Suppose $L(i) > L(j)$. We make the following cases:
+
+\begin{enumerate}
+\item $C[L(i)] \le A[j]$: In this case, $C[L(i)]$ is closer to $A[j]$ than $C[L(j)]$ (by the sorted-ness of $C$), which is a contradiction.
+\item $A[j] < C[L(i)]$: Note that $A[i] < A[j] < C[L(i)]$, and $C[L(j)] < C[L(i)]$.
+    We make two subcases:
+        \begin{enumerate}
+            \item $A[i] \le C[L(j)]$: In this case, $A[i]$ is closer to $C[L(j)]$ than $C[L(i)]$, which is a contradiction.
+            \item $A[i] > C[L(j)]$: In this case, $C[L(j)], A[i], A[j], C[L(i)]$ are in this order. Let $D(i), D(j)$ be as defined, and let $D'(i), D'(j)$ be the distance from $A[i], A[j]$ to
+                $C[L(j)], C[L(i)]$ respectively. Then we have $D(i) + D(j) = D'(i) + D'(j) + |A[i] - A[j]| > D'(i) + D'(j)$. However, by the definition of $D$, we have $D(i) \le D'(i)$, $D(j) \le D'(j)$, adding which gives a contradiction.
+        \end{enumerate}
+\end{enumerate}
+    Hence in all cases, $L(i) > L(j)$ leads to a contradiction, which completes the proof.
+\end{proof}
+
+Note that this implies that we can partition the array $A$ into contiguous chunks, each of which have the same value of $L(i)$.
+
+Consider any optimal solution, and each chunk in it. Note that there will be at most $k$ chunks.
+
+\begin{claim}
+The number of chunks is precisely $k$.
+\end{claim}
+\begin{proof}
+    Suppose that this is not the case. Then since $k$ is less than the number of distinct positions of residents, there exists at least one location among $A[1], \ldots, A[n]$ which doesn't have a
+    testing center on it, and since there are less than $k$ chunks, there is at least one testing center that is not associated to a chunk. If we assign all the unassigned testing centers to that location, the term corresponding to that location
+    strictly decreases to 0, and none of the other terms can increase, which leads to a contradiction.
+\end{proof}
+
+\begin{claim}
+In any optimal solution, the chosen value of $C$ corresponding to each chunk is one of the medians of each chunk (a median is as defined above, and not the usual definition of a median).
+\end{claim}
+\begin{proof}
+
+    From the previous claim, we know that there are precisely $k$ chunks, and the $i^\mathrm{th}$ chunk corresponds to $C[i]$ (since $C$ is sorted). 
+
+    Let the starting index of $j^\mathrm{th}$ chunk be $i_j$, and define $i_{k + 1} = n + 1$.
+
+    We shall construct a solution by replacing $C[j]$ by $C'[j]$, which is defined as one of the medians of $A[i_j], \ldots, A[i_{j + 1} - 1]$.
+
+    Note that for each $A[i]$ for $i \in \{i_j, \ldots, i_{j+1}-1\}$, if the new $D-$function is $D'$, then we have $D'(i) \le |A[i] - C'[i]|$.
+
+    By the optimality of $C$, we have
+    $$\sum_{i = 1}^n |A[i] - C[i]| = \sum_{i = 1}^n D(i) \le \sum_{i = 1}^n D'(i) \le \sum_{i = 1}^n |A[i] - C'[i]|$$
+
+    However, for each chunk, applying the lemma gives us that 
+    $$\sum_{i = i_j}^{i_{j+1} - 1} |A[i] - C[i]| \le \sum_{i = i_j}^{i_{j+1} - 1} |A[i] - C'[i]|$$
+
+    Combining these two, we note that equality must hold, and hence for each chunk, $C[i]$ must achieve the minimum of the sum for that chunk, which implies that it must be one of the medians of the chunk, by the lemma.
+\end{proof}
+
+Hence this shows that we now only need to focus on chunks of the array $A$ and their medians, i.e., if we focus solely on partitions of $A$, we can simply assign each partition its median, and since
+the optimal $C$ will have each element as a median of its associated chunk, the best possible solution must also be of this form.\\
+
+Hence for the case where $k$ is less than the number of distinct elements in $A$, we shall focus our attention to the following problem instead:
+
+{\bf
+For an array $A$, find a partition of $A$ into $k \ge 1$ contiguous subarrays $A[i_1\ldots i_2 - 1], \ldots, A[i_k\ldots i_{k+1} - 1]$, such that the following quantity is minimized:
+
+$$V(A, \{i_1, \ldots, i_k\}) = \sum_{j = 1}^k \sum_{i = i_j}^{i_{j+1} - 1} |A[i] - \text{median}(A[i_j\ldots i_{j+1} - 1])| $$
+
+and return the value of this quantity (here $i_{k+1} = n + 1$ as defined earlier).
+}
+
+Now we come back to the main problem. 
+
+Note that we have shown that in case of an array with $w$ distinct elements, and $n$ total elements, and $k < w$, all chunks will have a bijective correspondence with $C$, and the
+corresponding $C-$value is a median.
+
+If $w \le k \le n$, we can always find an assignment which has non-empty chunks of equal elements, and their corresponding $C$-values would be their medians, and this gives the value of that partition to be $0$.
+
+If $k > n$, we can keep adding arbitrary elements of the array $A$ to $C$ after doing the above to give the answer $0$.
+
+Hence this completes the analysis for the problem.
+
+We shall need some preprocessing to be able to compute the contribution of a chunk efficiently.
+
+Note that using our definition of a median, the middle element of an odd-sized array is a median, and the left-middle element of an even-sized array is a median. More formally, note that in a
+sorted subarray $A[i\ldots j]$, $A[\lfloor(i + j) / 2\rfloor]$ is a median.
+
+Define $Cost(A, i, j)$ to be the contribution of the elements from a chunk $A[i\ldots j]$ when we assign the median to it.
+
+Also define the prefix sums $p[i]$ to be the sum of $A[1\ldots i]$, and $p[0] = 0$. Then the sum of $A[i\ldots j]$ is $p[j] - p[i - 1]$.
+
+Then we have 
+$$Cost(A, i, j) = \sum_{k = i}^{\lfloor(i + j)/2\rfloor} (A[\lfloor(i + j) / 2\rfloor] - A[k]) + \sum_{k = \lfloor(i + j)/2\rfloor + 1}^{j} (A[k] - A[\lfloor(i + j)/2\rfloor])$$
+
+If $i + j$ is even, then this reduces to (after discarding the middle element and cancelling the remaining instances of $A[(i + j)/2]$):
+
+$$\sum_{k = (i + j)/2 + 1}^j A[k] - \sum_{k = i}^{(i + j) / 2 - 1} A[k] = p[j] - p[(i + j) / 2] - p[(i + j) / 2 - 1] + p[i - 1]$$
+
+If $i + j$ is odd, then a similar reduction gives 
+
+$$\sum_{k = (i + j + 1)/2}^j A[k] - \sum_{k = i}^{(i + j - 1) / 2} A[k] = p[j] - p[(i + j - 1) / 2] - p[(i + j - 1) / 2] + p[i - 1]$$
+
+Thus from here, we note that $Cost(A, i, j) = p[j] - p[m] - p[m'] + p[i - 1]$ where $m' = \lfloor(i + j - 1)/2\rfloor$ and $m = \lceil(i + j - 1)/2\rceil$.
+
+\begin{enumerate}
+
+\item Subproblems
+
+We will have the following subproblems:
+
+        $P(i, j):$ Find the minimum possible value of $V(A[1\ldots i], \{i_1, \ldots, i_j\})$, say $Opt(i, j)$ if $j$ is less than the number of distinct elements in $A[1\ldots i]$, 0 otherwise. Here $i \in \{0, 1, \ldots, n\}$ and $j \in \{1, 2, \ldots, k\}$. $j = 0$ is invalid since we have to put at least one element in the array $C$ for the $\min$ in the definition to be well-defined.
+
+\item Base case
+
+    \begin{enumerate}
+    %The first types of base cases will be when $j \ge i$: in this case, the answer is $0$.
+    \item When $j = 1$: in this case, the answer is $Cost(A, 1, i)$.
+    \item When $i = 0$: in this case, the answer is $0$.
+    \end{enumerate}
+
+\item Recursion with justification
+
+        Consider $P(i, j)$ where $j > 1, i \ge 1$.
+
+        Now note that the last partition can start from $i'$ where $1 \le i' \le i$.
+
+        We claim that the answer to this problem is the minimum of $Cost(A, i', i) + Opt(i' - 1, j - 1)$ over all $i'$. 
+
+        For a proof, suppose there is a solution to $P(i, j)$ in which the last chunk has endpoints $i', i$ and has a smaller value. Then we have a solution for $P(A, i' - 1, j - 1)$ which has a lower
+        value than $Opt(i' - 1, j - 1)$, contradiction. So $\min_{i' \in \{1, \ldots, i\}} Cost(A, i', i) + Opt(i' - 1, j - 1) \le Opt(i, j)$. Now to construct the solution that achieves the bound,
+        let $i'$ be the argmin of the expression. Then we choose the optimal solution for $A[1\ldots i'-1]$ with $j - 1$ partitions and add the partition $A[i' \ldots i]$ to it, so we are done.
+        
+        Note that in the case when $j$ is at least the number of distinct elements in $A[1\ldots i]$, choosing $i'$ to be the least index the element at which is $A[i]$ leads to the answer $0$ (since the corresponding subproblem has exactly one distinct element less than the current subproblem, and $j$ replaced by $j - 1$), and hence this formula works in this case too.
+        
+        Hence, we have
+        $$Opt(i, j) = \min_{i' \in \{1, \ldots, i\}} \left(Opt(i' - 1, j - 1) + Cost(A, i', i)\right)$$
+
+\item Order in which sub-problems are solved
+
+    We solve the base cases in the order $(i, j) = (1, 1), (2, 1), \ldots, (n, 1), (0, 1), (0, 2), \ldots, (0, k)$.
+
+    We then solve the remaining problems in lexicographical order of $(i, j)$.
+
+    Note that this is a valid order of solving problems because while computing $Opt(i, j)$, we either need a base case or a value computed before it, the pair of indices corresponding to which is lexicographically smaller than $(i, j)$.
+
+\item Form of output
+
+    If $k \ge n$, then we straight up return 0. Else we return $D[n, k]$, where $D$ is the table in the array that we maintain to store the answers to the sub-problems.
+
+\item Pseudocode
+
+    \begin{algorithmic}[1]
+        \Function{MinCost}{$A[1\ldots n], k$}
+            \If{$k \ge n$}
+                \State \Return 0
+            \EndIf
+            \State \textbf{let} $p[0\ldots n]$ be an array initialized to all 0s
+            \For{$i \in \{1\ldots n\}$}
+                \State $p[i] := p[i - 1] + A[i]$
+            \EndFor
+            \Function{Cost}{$i, j$}
+                \State \Return $p[j-1]-p[\lfloor(i+j-1)/2\rfloor]-p[\lceil(i+j-1)/2\rceil]+p[i-1]$
+            \EndFunction
+            \State \textbf{let} $D$ be a 0-indexed 2D array of dimension $(n + 1, k + 1)$ initialized to $\infty$
+            \For{$i \in \{1\ldots n\}$}
+                \State $D[i, 1] := Cost(1, i)$
+            \EndFor
+            \For{$j \in \{1\ldots k\}$}
+                \State $D[0, j] := 0$
+            \EndFor
+            \For{$i \in \{1\ldots n\}$}
+                \For{$j \in \{2\ldots k\}$}
+                    \For{$i' \in \{1\ldots i\}$}
+                        \State $D[i, j] := \min(D[i, j], D[i' - 1, j - 1] + Cost(i', i))$
+                    \EndFor
+                \EndFor
+            \EndFor
+            \State \Return $D[n, k]$
+        \EndFunction
+    \end{algorithmic}
+
+\item Runtime analysis
+
+    Note that if $k \ge n$, then the program takes $O(1)$ time.
+    Otherwise, we create $p$ in $O(n)$ time, compute it in $O(n)$ time using the loop at line 6, create $D$ in time $O(nk)$ at line $12$. Then we do initialization of base cases in $O(n + k)$ time
+    using two loops. Then we have three nested loops. The innermost loop's body
+    takes $O(1)$ time to run, since cost can be computed in $O(1)$ using $p$, and the minimum function takes $O(1)$ to run as well. Hence the innermost loop takes time $O(i)$. The outer loop
+    runs this $k$ times, so it takes time $O(ik)$. The outermost loop runs once for each $i$, and hence the total time is $O(n^2 k)$ for the outermost loop. The return takes $O(1)$ time. Hence the
+    complete algorithm runs in $O(n^2 k)$ time for $k < n$. Thus the complexity of the algorithm is:
+
+    \begin{equation*}
+        T(n) \in 
+        \begin{cases}
+            O(1) & \text{ if } k \ge n \cr
+            O(n^2k) & \text{ otherwise} \cr
+        \end{cases}
+    \end{equation*}
+
+\item Small example
+
+    $(n, k) = (15, 10)$, $A = \{1, 2, 3, 3, 3, 4, 5, 6, 7, 7, 8, 9, 10, 11, 11\}$
+
+    $D$ is as follows:
+
+    \begin{center}
+        \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|}
+            \hline
+            $i \downarrow, j \rightarrow$ & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 \\
+            \hline
+            0 & $\infty$ & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+            \hline
+            1 & $\infty$ & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+            \hline
+            2 & $\infty$ & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+            \hline
+            3 & $\infty$ & 2 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+            \hline
+            4 & $\infty$ & 3 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+            \hline
+            5 & $\infty$ & 3 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+            \hline
+            6 & $\infty$ & 4 & 2 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+            \hline
+            7 & $\infty$ & 6 & 4 & 2 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\
+            \hline
+            8 & $\infty$ & 9 & 5 & 3 & 2 & 1 & 0 & 0 & 0 & 0 & 0 \\
+            \hline
+            9 & $\infty$ & 13 & 6 & 4 & 3 & 2 & 1 & 0 & 0 & 0 & 0 \\
+            \hline
+            10 & $\infty$ & 17 & 7 & 5 & 3 & 2 & 1 & 0 & 0 & 0 & 0 \\
+            \hline
+            11 & $\infty$ & 21 & 8 & 6 & 4 & 3 & 2 & 1 & 0 & 0 & 0 \\
+            \hline
+            12 & $\infty$ & 26 & 10 & 8 & 6 & 4 & 3 & 2 & 1 & 0 & 0 \\
+            \hline
+            13 & $\infty$ & 31 & 13 & 9 & 7 & 5 & 4 & 3 & 2 & 1 & 0 \\
+            \hline
+            14 & $\infty$ & 37 & 16 & 10 & 8 & 6 & 5 & 4 & 3 & 2 & 1 \\
+            \hline
+            15 & $\infty$ & 42 & 19 & 11 & 9 & 7 & 5 & 4 & 3 & 2 & 1 \\
+            \hline
+        \end{tabular}
+    \end{center}
+
+    Note that the column corresponding to $j = 0$ is never used and has a value $\infty$ just because it is never updated (and doesn't correspond to a valid subproblem, as mentioned in the description of the subproblems).
+
+\item Remark: In a private post to instructors on Piazza, I had mentioned that there exists an $O(nk)$ DP solution using the SMAWK algorithm as well, so the above algorithm is not optimal, but as the instructor replied, the exhibited time complexity $O(n^2k)$ qualifies for full credit.
+
+\end{enumerate}

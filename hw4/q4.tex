@@ -1,0 +1,80 @@
+For the sake of convenience, we first enumerate all possible subsets $S$ of $\{1, 2, 3, 4, 5\}$ which have the following property: For any $x \in S$, $\{x - 1, x + 1\} \cap S = \emptyset$ (i.e., no two consecutive integers are in $S$). \nl
+These sets are $\emptyset, \{1\}, \{2\}, \{3\}, \{4\}, \{5\}, \{1, 3\}, \{1, 4\}, \{1, 5\}, \{2, 4\}, \{2, 5\}, \{3, 5\}, \{1, 3, 5\}$.\nl
+Call this collection of sets $I$ (we will treat this as an array of sets for the remaining solution).\nl
+Now coming to the format of the main proof:
+\begin{enumerate}
+\item Subproblems\nl
+$P(i, S) = $ the maximum possible sum attainable when the set of tuples is restricted to rows $1\ldots i$, and precisely those elements of row $i$ are chosen that have their column indices in $S$. ($S$ can be empty).
+\item Base case\nl
+The base case is when $i = 0$. For any set $S$ of indices, the value of $P(0, S)$ is vacuously $0$.
+\item Recursion with justification\nl
+Consider the problem to which $P(i, S)$ is the answer. In such a problem, we restrict the choices of pairs of indices to those which have row numbers in $\{1, \cdots, i\}$.\nl
+Note that the set of column indices that can be chosen at row $i$ in a solution to this problem is in $I$ (and each set in $I$ is a valid choice for the indices chosen in row $i$, disregarding the
+choices of indices for the previous row). Note that for any choice $S$ of indices in row $i$, for a valid choice $T$ of the previous row, we must have $S \cap T = \emptyset$, and the converse holds true as well.\nl
+Suppose there is a choice $W$ of tuples of indices which have row indices at most $i$, with the row $i$ column index set being $S$ and row $i - 1$ column index set being $T$, which has a sum more than $P(i - 1, T) + \sum_{j \in S} A[i, j]$. Then $W \setminus \{(i, j) \mid j \in S\}$ is a choice of tuples of indices which have row indices at most $i - 1$, but it the sum of elements corresponding to that choice of indices exceeds $P(i - 1, T)$, which is impossible by the definition of $P$. Hence, for any choice $W$ as mentioned, the sum of chosen row $i$ elements + $P(i - 1, T)$ must be an upper bound for the sum corresponding to $W$. The maximum of this expression over all $T$ is thus an upper bound on $P(i, S)$. However, note that this is achievable as well (merely choose the $T$ corresponding to the maximum).\nl
+Hence, the answer to the problem is (for $i > 0$):
+\begin{align*}
+    P(i, S) &= \max_{T \in I, S \cap T = \emptyset} \left(P(i - 1, T) + \sum_{j \in S} A[i, j]\right)\\
+            &= \left(\max_{T \in I, S \cap T = \emptyset} P(i - 1, T)\right) + \left(\sum_{j \in S} A[i, j]\right)
+\end{align*}
+where the second equality holds because the sum doesn't depend on $T$.\nl
+Note that for any set in $I$, there is at least one disjoint set in $I$ (for instance, the empty set), and hence the max is not empty.
+\item Order in which sub-problems are solved\nl
+We solve the problems in the following order:\nl
+If $i < j$, then problem $(i, S)$ is solved before $(j, T)$ for any $S, T \in I$. If $i = j$, then problem $(i, S)$ is solved before $(j, T)$ if and only if $S$ comes before $T$ in $I$. Note that this is a valid order of solving the subproblems since the expression of the answer to $(i, S)$ contains the answers to problems of the form $(i - 1, T)$ for some $T$, and all of these are computed before we compute $P(i, S)$.
+\item Form of output\nl
+The DP table of the algorithm will be in the form of a matrix $D$, where $D[i, j]$ denotes $P(i, I_j)$, where $I_j$ is the set at index $j$ in the array $I$. Note that this is 0-indexed, as is $I$, however we assume that $A$ is 1-indexed.
+
+The output will be an integer, and will be the maximum of $D[n, j]$ over all $j$ where $j$ ranges from $0$ to $12$ (all indices of $I$).
+
+\item Pseudocode
+
+\begin{algorithmic}[1]
+    \Function{MaxSum}{$A, n$}
+        \State \textbf{let} $D := $ new 2D array of dimension $(n + 1, 13)$, initialised to all $0$s.
+        \For{$i \in \{1 \ldots n\}$}
+            \For{$j \in \{0 \ldots 12\}$}
+                \For{$k \in \{0 \ldots 12\}$}
+                    \If{$I_j \cap I_k = \emptyset$}
+                        \State $D[i, j] := \max(D[i, j], D[i - 1, k])$
+                    \EndIf
+                \EndFor
+                \For{$l \in I_j$}
+                    \State $D[i, j] := D[i, j] + A[i, l]$
+                \EndFor
+            \EndFor
+        \EndFor
+        \State \textbf{let} $s = 0$
+        \For{$j \in \{0 \ldots 12\}$}
+            \State $s := \max(s, D[n, j])$
+        \EndFor
+        \State \Return $s$
+    \EndFunction
+\end{algorithmic}
+
+\item Runtime analysis
+
+    Initializing $D$ takes $\Theta(n)$ time. Checking for intersection at line 6, as well as taking the max at line 7, takes $\Theta(1)$ time. Hence one iteration of the loop starting at line $5$
+    takes $\Theta(1)$ time. The loop at line 10 takes $\Theta(1)$ time, and since the loop at line $4$ takes $\Theta(1)$ time, one iteration of the loop starting at line $4$ takes $\Theta(1)$ time.
+    Hence the loop starting at line $3$ takes $\Theta(n)$ time. Lines 15-19 take $\Theta(1)$ time, and hence the overall time complexity is $\Theta(n)$.
+
+\item Small example
+
+    The matrix $D$ for the mentioned example in the problem is as follows:
+    \begin{center}
+        \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+            \hline
+            $i \downarrow, j \rightarrow$ & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 \\
+            \hline
+            0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\
+            \hline
+            1 & 0 & -1 & 2 & 3 & -4 & 5 & 2 & -5 & 4 & -2 & 7 & 8 & 7\\
+            \hline
+            2 & 8 & 10 & 3 & 10 & 13 & 9 & 12 & 15 & 11 & 8 & 4 & 11 & 13\\
+            \hline
+        \end{tabular}
+    \end{center}
+
+    From reading off the last row, the answer is $15$.
+
+\end{enumerate}
