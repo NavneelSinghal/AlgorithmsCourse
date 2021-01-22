@@ -568,7 +568,7 @@ Your goal is to find a perfect matching such that the quality of the matching is
                     \If{$matchingSize = n$}
                         \State \Return the corresponding matching found
                     \EndIf
-                \ElsIf{$visited_s[x] \land \lnot visited_s[y]$}
+                \Else
                     \State recompute $visited_s, visited_t$ using dfs on the residual graphs of $H, H'$
                 \EndIf
             \EndWhile
