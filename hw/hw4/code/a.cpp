@@ -66,14 +66,14 @@ int floor2(int x) {
 }
 
 int median_clustering(vector<int> &a, int k) {
-    
+
     int n = a.size();
     vector<int> pre(n + 1);
-    
+
     for (int i = 1; i <= n; ++i) {
         pre[i] = pre[i - 1] + a[i - 1];
     }
-    
+
     auto cost = [&] (int i, int j) {
         return pre[j] - pre[ceil2(i + j - 1)] - pre[floor2(i + j - 1)] + pre[i - 1];
     };
@@ -89,7 +89,7 @@ int median_clustering(vector<int> &a, int k) {
             }
         }
     }
-    
+
     cout << "\\hline\n";
     cout << "$i \\downarrow, j \\rightarrow$ & ";
     for (int j = 0; j <= k; ++j) cout << j << vector<string>{" & ", " \\\\\n"}[j == k];
