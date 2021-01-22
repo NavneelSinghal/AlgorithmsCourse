@@ -1,0 +1,156 @@
+% CUSTOM TEMPLATE FOR SOLUTIONS STARTS
+\documentclass[answers]{exam}
+ 
+ \usepackage{graphicx}
+ \usepackage{float}
+ \usepackage{amsmath}
+ \usepackage{amsfonts}
+ \usepackage{framed}
+ \usepackage{algorithmicx}
+ \usepackage{algpseudocode}
+ \newcommand{\ans}[1]{\begin{framed}{\textbf{Answer:} #1}\end{framed}}
+ \newcommand{\sol}{\uplevel{\textsc{Solution:}}}
+ \newenvironment{answer}{%
+     \renewcommand{\solutiontitle}{\noindent\textbf{Answer:}\enspace}
+     \begin{solution}
+     }{%
+     \end{solution}
+     \renewcommand{\solutiontitle}{\noindent\textbf{Solution:}\enspace}
+ }
+% CUSTOM TEMPLATE FOR SOLUTIONS ENDS
+
+% First we setup the header and footer
+\pagestyle{headandfoot}
+\runningheadrule
+\runningfootrule
+\header{COL351: Analysis and Design of Algorithms (CSE, IITD, Semester-I-2020-21)}{}{Quiz 4}
+\footer{}{\thepage  \, of \numpages}{}
+ 
+% We want the points for each question displayed on the left
+%\pointname{points}
+%\pointsinmargin
+ 
+% Automatically total the points - make sure to compile TWICE
+\addpoints
+ 
+\begin{document}
+
+
+\vspace{0.1in}
+
+
+\vspace{0.1in}
+% Some general text together with number of questions and total points possible
+There are \numquestions\, questions for a total of \numpoints\, points.
+\vspace{0.1in}
+\hrule
+ \vspace{0.2in}
+\begin{questions}
+ 
+\question[3] 
+
+Recall the Longest Increasing Subsequence problem discussed in class. As in the lecture, for the following sequence of numbers in array $A[1...16] = [14,8,2,7,4,10,6,0,1,9,5,13,11,3,15,12]$, let
+    $L[i]$ denote the length of the longest increasing subsequence that ends with $A[i]$. Give the values of $L[1], L[2], ..., L[16]$.
+
+    \begin{solution}
+1, 1, 1, 2, 2, 3, 3, 1, 2, 4, 3, 5, 5, 3, 6, 6
+    \end{solution}
+
+\question[7]
+You are a manager at a shipping company. On a particular day you have to ship nnn boxes with weights $w[1...n]$ that are positive integers between $1$ and $100$. You have four trucks, each with weight
+    limit $D$ that is a positive integer. Design an algorithm to determine if it is possible to pack all the $n$ boxes into the four trucks such that the for every truck, the total weight of boxes in
+    the truck is at most $D$ (i.e., weight limit is not exceeded). Your algorithm should output ``yes" if it is possible to pack and ``no" otherwise. Argue correctness and giving running time analysis.
+
+    \begin{solution}
+
+        \textbf{Subproblems:}
+$P(i, j, k, l)$ = problem which asks if there is an assignment of boxes $1..i$ into four trucks where the total weights on the 1st, 2nd, 3rd trucks are $j, k$ and $l$ respectively (the weight on the
+        last truck equals (sum of weights on boxes $1..i$) - $(j + k + l)$), where $j, k, l$ are restricted to the domain where each truck has boxes on it weighing at most $D$.
+
+$S(i, j, k, l)$ is the answer to the problem $P(i, j, k, l)$ (either True or False).
+
+        \textbf{Base Case:}
+The base case is when $i = 0$, i.e., the case when we assign no box to any truck. In that case, $S(0, 0, 0, 0) = True$, and for all other $j, k, l$, we have $S(0, j, k, l) = False$.
+
+        \textbf{Recursive step:}
+
+Consider the problem $P(i, j, k, l)$.
+
+Either we assign the box $\#i$ to the truck $1, 2, 3$ or $4$. In any case, we can assign a truck if that truck doesn't overflow. In the case of truck 1, it is possible only if $j \ge w[i]$, and the
+        total weights previously must have been $j - w[i]$, $k$, $l$ respectively, and similarly for the other trucks. For truck $4$, the weights must have been $j, k, l$ on the first three trucks.
+
+Hence we have:
+$$S(i, j, k, l) = S'(i-1, j - w[i], k, l) \, \text{OR} \, S'(i-1, j, k - w[i], l) \text{OR} \, S'(i-1, j, k, l - w[i]) \, \text{OR} \, S'(i-1, j, k, l)$$
+
+where $S'(i, j, k, l)$ is defined as $S(i, j, k, l)$ if $0 \le j, k, l$, (sum of $w[1..i]$ - $(j + k + l)$) $\le D$ and False otherwise.
+
+Note that this takes care of overflow as well as that of negative total weight in a subproblem (which can arise due to subtraction, as in cases like where $j < w[i]$).
+It is easy to see how the assignment can be computed from these values, and hence this condition is necessary and sufficient.
+
+        \textbf{Order in which problems are solved:}
+We solve the problems in increasing order of $i$, then $j$, then $k$, then $l$ (first we compare $i$, then we compare $j$ if there is a tie, and so on). This is consistent, since for each subproblem
+        we need, the expression on the right (in the recursive step) is computed before the current subproblem in this ordering (since at least one of $i, j, k, l$ decreases by at least 1).
+
+        \textbf{Output (answer to the final problem):}
+If $D$ is at least $100n$, then we can put all our boxes in the same truck, and hence the answer is true. Otherwise, the answer to the given problem will be the logical OR of all $S(n, j, k, l)$ where
+        $j, k, l \le D$ and $0 \le$ (sum of weights of boxes $1..n) - (j + k + l) \le D$.
+
+        \textbf{Pseudocode:}
+
+        \begin{algorithmic}
+            \Function{PossiblePacking}{$w[1..n], D$}
+                \If{$D \ge 100n$}
+                    \State \Return True
+                \EndIf
+                \State let $s$ := boolean array of dimension $(n + 1) \times D \times D \times D$ initialized to all False
+                \State $s[0, 0, 0, 0] := True$
+                \State $sum := 0$
+                \For{$i \in \{1..n\}$}
+                    \State $sum += w[i]$ \Comment{$sum$ is now sum of $w[1..i]$}
+                    \For{$j \in \{0..D\}$}
+                        \For{$k \in \{0..D\}$}
+                            \For{$l \in \{0..D\}$}
+                                \If{$j \ge w[i]$}
+                                    \State $s[i, j, k, l] = s[i, j, k, l] \lor s[i - 1, j - w[i], k, l]$
+                                \EndIf
+                                \If{$k \ge w[i]$}
+                                    \State $s[i, j, k, l] = s[i, j, k, l] \lor s[i - 1, j, k - w[i], l]$
+                                \EndIf
+                                \If{$l \ge w[i]$}
+                                    \State $s[i, j, k, l] = s[i, j, k, l] \lor s[i - 1, j, k, l - w[i]]$
+                                \EndIf
+                                \If{$D \ge sum - j - k - l \ge w[i]$}
+                                    \State $s[i, j, k, l] = s[i, j, k, l] \lor s[i - 1, j, k, l]$
+                                \EndIf
+                            \EndFor
+                        \EndFor
+                    \EndFor
+                \EndFor
+                \State let $answer :=$ False
+                \Comment{$sum$ is now sum of $w[1..n]$}
+                \For{$j \in \{0..D\}$}
+                    \For{$k \in \{0..D\}$}
+                        \For{$l \in \{0..D\}$}
+                            \If{$0 \le sum - j - k - l \le D$}
+                                \State $answer = answer \lor s[n, j, k, l]$
+                            \EndIf
+                        \EndFor
+                    \EndFor
+                \EndFor
+                \State \Return $answer$
+            \EndFunction
+        \end{algorithmic}
+
+\textbf{Runtime analysis:}
+Note that if $D \ge 100n$, then the algorithm takes $O(1)$ time. Now suppose this is not the case. Then the declaration of the boolean array takes $O(n D^3)$ time. Then in the loop over $l$, the time
+taken per iteration is $O(1)$, assuming memory access, branch statements, comparison, and boolean and arithmetic operators take $O(1)$ time. Then since there are $D$ such iterations, the loop takes
+$O(D)$ time. So the loop over $k$ takes $O(D^2)$ time, and the loop over $j$ takes $O(D^3)$ time. The loop over $i$ thus takes $O(n D^3)$ time, since adding $w[i]$ to $sum$ takes $O(1)$ time and we do
+$O(D^3)$ work apart from this in each iteration. Now for the final answer computation, we have $3$ nested loops, and by a similar argument as above, it takes $O(D^3)$ time for that.
+
+Hence overall the algorithm runs in $O(n D^3)$ time if $D < 100n$ and $O(1)$ otherwise. The first case can be simplified to $O(n^4)$ as well (but that isn't the tightest bound we can get on the time complexity).
+
+    \end{solution}
+
+\end{questions}
+\end{document}
+
