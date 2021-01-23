@@ -568,8 +568,10 @@ Your goal is to find a perfect matching such that the quality of the matching is
                     \If{$matchingSize = n$}
                         \State \Return the corresponding matching found
                     \EndIf
-                \Else
-                    \State recompute $visited_s, visited_t$ using dfs on the residual graphs of $H, H'$
+                \ElsIf{$visited_s[x] \land \lnot visited_s[y]$}
+                    \State $visited_s[y] := $ true
+                \ElsIf{$\lnot visited_t[x] \land visited_t[y]$}
+                    \State $visited_t[x] := $ true
                 \EndIf
             \EndWhile
         \EndFunction
@@ -607,7 +609,7 @@ Your goal is to find a perfect matching such that the quality of the matching is
 
     Creation of the graphs takes $O(n + m)$ time, and sorting the edges takes $O(m \log m)$ time. Now note that running Ford Fulkerson on a partial residual graph takes $O(a \times (n + m)$ time,
     where $a$ is the number of iterations. Whenever we run Ford Fulkerson, we also recompute $visited_s, visited_t$ and compute the flow value as well. This takes $O(n + m)$ time as well. So
-    whenever we run Ford Fulkerson, the time taken is $O((a + 1)(n + m))$, and otherwise we just do $O(n + m)$ work. Hence the total work done in the loop is $O(n (n + m) + \sum(a + 1)(n + m))$ where the sum is taken over
+    whenever we run Ford Fulkerson, the time taken is $O((a + 1)(n + m))$, and otherwise we just do $O(1)$ work. Hence the total work done in the loop is $O(m + \sum(a + 1)(n + m))$ where the sum is taken over
     all possible runs of Ford Fulkerson. Note that whenever we run Ford Fulkerson, we are guaranteed to get at least an increase of 1 in the flow value. Hence there can be at most $n$ total
     iterations of Ford Fulkerson (since maximum matching can't exceed $n$). Thus, the sum of $a$ is at most $n$, and the number of summands is also at most $n$. So the total work done in the loop is
     $O(n (n + m))$. Returning the found matching takes $O(n + m)$ time as well. So the overall runtime is $O(n(n + m) + m \log m) = O(m(n + \log m) + n^2) = O(m(n + n) + n^2) = O(n(n + m))$,
